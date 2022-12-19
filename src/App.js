@@ -1,16 +1,23 @@
 import React, { Component } from "react";
 import CardList from "./CardList";
 import SearchBox from "./SearchBox";
-import { robots } from "./robots";
+import "./App.css";
 
 class App extends Component {
   // declaring the state inside constructor
   constructor() {
     super();
     this.state = {
-      robots: robots,
+      robots: [],
       searchField: "",
     };
+    // console.log("constructor");
+  }
+
+  componentDidMount() {
+    fetch("https://jsonplaceholder.typicode.com/users")
+      .then((response) => response.json())
+      .then((users) => this.setState({ robots: users }));
   }
 
   robotsSearchChange = (event) => {
@@ -24,13 +31,17 @@ class App extends Component {
         .toLowerCase()
         .includes(this.state.searchField.toLowerCase());
     });
-    return (
-      <div className="tc">
-        <h1>Robot Search</h1>
-        <SearchBox searchChange={this.robotsSearchChange}></SearchBox>
-        <CardList robots={filterRobots} />
-      </div>
-    );
+    if (this.state.robots.length === 0) {
+      return <h1 className="tc">Loading robots....</h1>;
+    } else {
+      return (
+        <div className="tc">
+          <h1 className="f1">Robot Search</h1>
+          <SearchBox searchChange={this.robotsSearchChange}></SearchBox>
+          <CardList robots={filterRobots} />
+        </div>
+      );
+    }
   }
 }
 
